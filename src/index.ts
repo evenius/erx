@@ -1,2 +1,2 @@
-export * from "./stream"
-export * from "./observable"
+export * from "./stream.js"
+export * from "./observable.js"

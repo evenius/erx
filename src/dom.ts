@@ -1,7 +1,7 @@
-import * as s from "./stream"
+import * as s from "./stream.js"
 
 export function now(): number {
-  const perf = typeof window.performance !== "undefined" ? window.performance : null;
+  const perf = typeof typeof window !== 'undefined' && 'performance' in window ? window.performance : null;
 
   // @ts-ignore
   const perfNow: () => number = perf && (perf.now || perf.webkitNow || perf.msNow || perf.oNow || perf.mozNow)
@@ -15,6 +15,15 @@ export function now(): number {
 export function animationFrame(): s.Stream<number> {
   let requestAnimFrame: (cb: FrameRequestCallback) => any = (cb) => setTimeout(() => cb(now()), 1000 / 60)
   let cancelAnimFrame: (handle: number) => any = window.clearTimeout;
+  if(typeof window === 'undefined') {
+    return new s.Stream((sink: any) => {
+      const handle = setImmediate(function tick(t) {
+        sink.value(t);
+        requestAnimFrame(tick);
+      });
+      return () => clearImmediate(handle);
+    });
+  }
 
   if (window.requestAnimationFrame) {
     requestAnimFrame = window.requestAnimationFrame;
@@ -25,8 +34,11 @@ export function animationFrame(): s.Stream<number> {
     requestAnimFrame = window.mozRequestAnimationFrame;
     // @ts-ignore
     cancelAnimFrame = window.mozCancelAnimationFrame;
+    // @ts-ignore
   } else if (window.webkitRequestAnimationFrame) {
+    // @ts-ignore
     requestAnimFrame = window.webkitRequestAnimationFrame;
+    // @ts-ignore
     cancelAnimFrame = window.webkitCancelAnimationFrame;
     // @ts-ignore
   } else if (window.msRequestAnimationFrame) {

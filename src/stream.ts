@@ -1,7 +1,6 @@
-import { Observable, Observer, Producer } from "./observable";
-import Promise from "./promise"
-const asap = require("asap")
-import { tryFn } from "./util/fn";
+import asap from 'asap';
+import { tryFn } from "./util/fn.js";
+import { Observable, Observer, Producer } from "./observable.js";
 
 export class Signal<A> extends Observable<A> {
 

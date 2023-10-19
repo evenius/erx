@@ -1,10 +1,10 @@
-import Promise from "./promise"
+import Promise from "./promise.js"
 
-const asap = require("asap")
+import asap from 'asap';
 
-import { isGen, genToObs } from "./util/generator";
-import { tryFn } from "./util/fn";
-import { Signal, Stream } from "./stream";
+import { isGen, genToObs } from "./util/generator.js";
+import { tryFn } from "./util/fn.js";
+import { Signal, Stream } from "./stream.js";
 
 export type Producer<A> = (sink: Sink<A>) => void | (() => void)
 
@@ -48,7 +48,7 @@ export class Observable<A> extends Promise<A> {
   producer: Producer<A>;
 
   constructor(producer: Producer<A>) {
-    super();
+    super(() => {});
     this.closed = false;
     this.observers = [];
     this.freeFn = null;
@@ -60,7 +60,7 @@ export class Observable<A> extends Promise<A> {
         this.observers.forEach((o) => o.error(err));
         this.cleanup();
         if (!this.resolved) {
-          this.reject(err);
+          this._reject(err);
         }
       }),
       () => asap(() => {
@@ -68,7 +68,7 @@ export class Observable<A> extends Promise<A> {
         this.observers.forEach((o) => o.close());
         this.cleanup();
         if (!this.resolved) {
-          this.resolve(this.value);
+          this._resolve(this.value);
         }
       })
     );

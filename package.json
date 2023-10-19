@@ -1,6 +1,6 @@
 {
   "name": "@evenius/erx",
-  "version": "4.0.0",
+  "version": "0.0.0",
   "description": "Minimal observables",
   "scripts": {
     "deploy": "npm publish --access=public",
